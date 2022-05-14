@@ -26,8 +26,9 @@ namespace IdentityManager.Controllers
 
         [HttpGet]
         [Route("Register")]
-        public async Task<IActionResult> Register()
+        public async Task<IActionResult> Register(string returnUrl=null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             RegisterViewModel registerViewModel = new RegisterViewModel();
             return View(registerViewModel);
         }
@@ -35,8 +36,11 @@ namespace IdentityManager.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Register")]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl=null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
+            returnUrl = returnUrl ?? Url.Content("~/");
+            _logger.LogInformation("return url : " + returnUrl);
             if(ModelState.IsValid)
             {
                 var user = new ApplicationUser 
@@ -50,7 +54,7 @@ namespace IdentityManager.Controllers
                 if(result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent:false);
-                    return RedirectToAction("Index", "Home");
+                    return LocalRedirect(returnUrl);
                 }
 
                 AddErrors(result);
@@ -61,22 +65,28 @@ namespace IdentityManager.Controllers
 
         [HttpGet]
         [Route("Login")]
-        public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login(string returnUrl=null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
+            _logger.LogInformation("return url : " + returnUrl);
+
             return View();
         }        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Login")]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl=null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
+            returnUrl = returnUrl ?? Url.Content("~/");
+            _logger.LogInformation("return url : " + returnUrl);
             if(ModelState.IsValid)
             {
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if(result.Succeeded)
                 {
-                    return RedirectToAction(nameof(HomeController.Index), "Home");
+                    return LocalRedirect(returnUrl);
                 }
 
                 ModelState.AddModelError(string.Empty, "Invalid login attemp.");
