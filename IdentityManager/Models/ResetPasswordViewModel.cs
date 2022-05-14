@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IdentityManager.Models
 {
-    public class RegisterViewModel
+    public class ResetPasswordViewModel
     {
         [Required]
         [EmailAddress]
@@ -24,7 +24,6 @@ namespace IdentityManager.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        [Required]
-        public string Name { get; set; }
+        public string Code { get; set; }
     }
 }
