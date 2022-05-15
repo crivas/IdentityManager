@@ -1,4 +1,4 @@
-﻿using IdentityManager.Data;
+using IdentityManager.Data;
 using IdentityManager.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,10 @@ builder.Services.Configure<IdentityOptions>(opt =>
     opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(30);
     opt.Lockout.MaxFailedAccessAttempts = 5;
 });
-
+builder.Services.ConfigureApplicationCookie(opt =>
+{
+    opt.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Home/Accessdenied");
+});
 // builder.Services.AddAuthentication().AddFacebook(options =>
 // {
 //     options.AppId = builder.Configuration.GetSection("Facebook").GetValue<string>("AppId");
@@ -27,6 +30,7 @@ builder.Services.Configure<IdentityOptions>(opt =>
 // });
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -55,6 +59,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapRazorPages();
 
 app.Run();
 
